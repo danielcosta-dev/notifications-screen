@@ -1,33 +1,63 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
+import { useEffect, useRef, useState } from 'react'
+import Main from './components/main'
+import NotificationHeader from './components/notification-header'
+import Notification from './components/notification'
 import './App.css'
 
 function App() {
-  const [count, setCount] = useState(0)
+
+  const NOTIFICATIONS_MOCK = [
+    {
+      id: 1,
+      name: 'Daniel',
+      asRead: false,
+    },
+    {
+      id: 2,
+      name: 'Mateus',
+      asRead: false,
+    },
+    {
+      id: 3,
+      name: 'Vitória',
+      asRead: false,
+    }
+  ];
+
+  const [notRead, setNotRead] = useState(0);
+  const [notifications, setNotifications] = useState(NOTIFICATIONS_MOCK);
+
+  useEffect(() => {
+    let count = 0;
+
+    notifications.map((item) => {
+      if (item.asRead != false) {
+        count = count + 1;
+      };
+
+      setNotRead(count);
+    });
+  }, [notifications]);
+
+  const handleNotificationClick = id => {
+    setNotifications(prevNotifications =>
+      prevNotifications.map(notification =>
+        notification.id === id ? { ...notification, asRead: !notification.asRead } : notification
+      )
+    );
+  };
 
   return (
     <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
+      <Main>
+        <NotificationHeader notRead={notRead} />
+
+        { notifications.map((item) =>
+          <div onClick={() => handleNotificationClick(item.id)}>
+            { item.name }
+          </div>
+        )}
+      </Main>
     </>
   )
 }
